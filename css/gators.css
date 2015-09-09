@@ -1,0 +1,18 @@
+gator {
+
+}
+
+gator svg {
+  transition: transform 0.5s ease-out;
+}
+
+.upper_jaw {
+  transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(0deg) translate(204.654px, -644.378px);
+  transition: transform 0.5s ease-out;
+}
+.open {
+  transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(30deg) translate(204.654px, -644.378px);
+}
+.closed {
+  transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px);
+}
