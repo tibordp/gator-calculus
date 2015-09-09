@@ -5,11 +5,11 @@ board {
   top: 50%; left: 50%;
 }
 
-egg {
-  padding: 5px;
+egg, add-more {
+  padding: 10px;
 }
 
-gator svg:hover, egg svg:hover {
+gator svg:hover, egg svg:hover, add-more svg:hover {
   cursor: pointer;
   -webkit-filter: brightness(1.1) drop-shadow(0 0 2px black);
   -moz-filter: brightness(1.1) drop-shadow(0 0 2px black);
@@ -28,11 +28,21 @@ gator svg:hover, egg svg:hover {
   transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px);
 }
 
-.shrunk {
-  z-index: 9000;
-  transition: transform 1s ease-out;
-  transform: rotate(90deg) scale(0,0);
-  overflow: visible;
+board-group add-more {
+  visibility: hidden;
+}
+
+board-group.col.hover > add-more,
+board-group.col.hover > board-group.row > add-more {
+  visibility: visible;
+}
+
+.dying  {
+  transition: all 2s ease-out;
+  -webkit-filter: hue-rotate(720deg) brightness(4);
+  -moz-filter: hue-rotate(720deg) brightness(4);
+  -ms-filter: hue-rotate(720deg) brightness(4);
+  filter: hue-rotate(720deg) brightness(4);
 }
 
 .eaten {
@@ -44,7 +54,7 @@ gator svg:hover, egg svg:hover {
 }
 
 
-gator, egg, board-group {
+gator, egg, add-more, board-group {
   vertical-align: middle;
   text-align: center;
   white-space:nowrap;

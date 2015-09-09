@@ -2,18 +2,16 @@ function Gator() {
   this.element = $(document.createElement("gator"));
   this.element.html(Sprites["alligator.svg"]);
   this.jaw = $(".upper_jaw", this.element);
-  var egg = this.element;
+  var gator = this;
   $("svg", this.element).click(function(event) {
-    egg.addClass("shrunk");
+    gator.element.addClass("shake shake-constant shake-rotate dying");
     window.setTimeout(function() {
-      egg.remove();
     }, 500);
+    window.setTimeout(function() {
+      gator.element.remove();
+    }, 1500);
     event.stopPropagation();
-  }).mouseover(function(event) {
-    $(this).parents().removeClass("hover");
-    event.stopPropagation();
-  })
-
+  });
   this.setColor(0);
 }
 
@@ -35,16 +33,35 @@ function Egg() {
   this.element.html(Sprites["egg.svg"]);
   this.setColor(0);
   var egg = this;
-  this.element.click(function(event) { egg.shake(); event.stopPropagation(); })
+  $("svg", this.element).click(function(event) {
+    egg.shake();
+    event.stopPropagation();
+  });
 }
 
 Egg.prototype.shake = function () {
   var element = this.element;
-  element.addClass("shake shake-constant");
-  window.setTimeout(function() { element.removeClass("shake shake-constant"); },1000)
+  element.addClass("shake shake-slow shake-constant");
+  window.setTimeout(function() { element.removeClass("shake shake-slow shake-constant"); },1000)
 }
 
 Egg.prototype.setColor = function(color) {
   this.color = color;
   $(".colored", this.element).css("fill", "hsl(" + String(color) + ", 50%, 50%)");
+}
+
+function AddMore() {
+  this.element = $(document.createElement("add-more"));
+  this.element.html(Sprites["add-more.svg"]);
+  var egg = this;
+  $("svg", this.element).click(function(event) {
+    egg.shake();
+    event.stopPropagation();
+  });
+}
+
+AddMore.prototype.shake = function () {
+  var element = this.element;
+  element.addClass("shake shake-constant");
+  window.setTimeout(function() { element.removeClass("shake shake-constant"); },1000)
 }

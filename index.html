@@ -12,35 +12,62 @@
     <board-group class="row">
       <board-group class="col">
         <div class="here_gator"></div>
-        <div class="here_egg"></div>
-      </board-group>
-      <board-group class="col">
-        <div class="here_gator"></div>
-        <div class="here_egg"></div>
+        <board-group class="row">
+          <div class="here_egg"></div>
+          <div class="here_egg"></div>
+          <div class="here_addmore"></div>
+        </board-group>
       </board-group>
       <board-group class="col">
         <div class="here_gator"></div>
         <board-group class="row">
           <div class="here_egg"></div>
+          <div class="here_addmore"></div>
+        </board-group>
+      </board-group>
+      <board-group class="col">
+        <div class="here_gator"></div>
+        <board-group class="row">
           <board-group class="col">
             <div class="here_gator"></div>
             <board-group class="row">
-              <div class="here_gator"></div>
-              <div class="here_gator"></div>
+              <board-group class="col">
+                <div class="here_gator"></div>
+                <board-group class="row">
+                  <div class="here_egg"></div>
+                  <div class="here_addmore"></div>
+                </board-group>
+              </board-group>
+              <board-group class="col">
+                <div class="here_gator"></div>
+                <board-group class="row">
+                  <div class="here_egg"></div>
+                  <div class="here_egg"></div>
+                  <div class="here_egg"></div>
+                  <div class="here_egg"></div>
+                  <div class="here_addmore"></div>
+                </board-group>
+              </board-group>
               <board-group class="col">
                 <div class="here_gator"></div>
                 <board-group class="row">
                   <div class="here_egg"></div>
                   <board-group class="col">
                     <div class="here_gator"></div>
-                    <div class="here_egg"></div>
+                    <board-group class="row">
+                      <div class="here_egg"></div>
+                      <div class="here_addmore"></div>
+                    </board-group>
                   </board-group>
                 </board-group>
               </board-group>
+              <div class="here_addmore"></div>
             </board-group>
           </board-group>
+          <div class="here_addmore"></div>
         </board-group>
       </board-group>
+      <div class="here_addmore"></div>
     </board-group>
   </board>
 
@@ -48,6 +75,11 @@
   $(".here_egg").each( function() {
     var egg = new Egg();
     egg.setColor(Math.random() * 40);
+    $(this).replaceWith(egg.element);
+  });
+
+  $(".here_addmore").each( function() {
+    var egg = new AddMore();
     $(this).replaceWith(egg.element);
   });
 
