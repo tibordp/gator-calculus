@@ -1,9 +1,20 @@
-gator {
-
+board {
+  display: block;
+  position: absolute;
+  transform: translate(-50%, -50%) scale(1) ;
+  top: 50%; left: 50%;
 }
 
-gator svg {
-  transition: transform 0.5s ease-out;
+egg {
+  padding: 5px;
+}
+
+gator svg:hover, egg svg:hover {
+  cursor: pointer;
+  -webkit-filter: brightness(1.1) drop-shadow(0 0 2px black);
+  -moz-filter: brightness(1.1) drop-shadow(0 0 2px black);
+  -ms-filter: brightness(1.1) drop-shadow(0 0 2px black);
+  filter: brightness(1.1) drop-shadow(0 0 2px black);
 }
 
 .upper_jaw {
@@ -15,4 +26,58 @@ gator svg {
 }
 .closed {
   transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px);
+}
+
+.shrunk {
+  z-index: 9000;
+  transition: transform 1s ease-out;
+  transform: rotate(90deg) scale(0,0);
+  overflow: visible;
+}
+
+.eaten {
+  z-index: 9000;
+  transition: transform 1s ease-out;
+  transform: translateY(0px) translateX(-50px) scale(0,0) ;
+  transform-origin: left;
+  overflow: visible;
+}
+
+
+gator, egg, board-group {
+  vertical-align: middle;
+  text-align: center;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+board-group.row {
+  display: inline-block;
+  border: 1px solid transparent;
+}
+
+svg { pointer-events: none; }
+svg g { pointer-events: all; }
+
+board-group.col {
+  display: inline-block;
+  height: 100%;
+  border: 1px solid #eee;
+  border-radius: 20px;
+  padding: 5px;
+}
+
+
+board-group.col > * {
+  display: block;
+}
+
+board-group.row > * {
+  display: inline-block;
+}
+
+board-group.hover.col {
+  cursor: pointer;
+  border-color: #beb;
+  background: linear-gradient(0deg, #f3fff3, #fff);
 }

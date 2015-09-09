@@ -3,27 +3,78 @@
 <head>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
   <link rel="stylesheet" type="text/css" href="css/gators.css">
+  <link rel="stylesheet" type="text/css" href="css/csshake.css">
   <script src="./sprites/sprites.js"></script>
   <script src="./js/main.js"></script>
 </head>
 <body>
+  <board>
+    <board-group class="row">
+      <board-group class="col">
+        <div class="here_gator"></div>
+        <div class="here_egg"></div>
+      </board-group>
+      <board-group class="col">
+        <div class="here_gator"></div>
+        <div class="here_egg"></div>
+      </board-group>
+      <board-group class="col">
+        <div class="here_gator"></div>
+        <board-group class="row">
+          <div class="here_egg"></div>
+          <board-group class="col">
+            <div class="here_gator"></div>
+            <board-group class="row">
+              <div class="here_gator"></div>
+              <div class="here_gator"></div>
+              <board-group class="col">
+                <div class="here_gator"></div>
+                <board-group class="row">
+                  <div class="here_egg"></div>
+                  <board-group class="col">
+                    <div class="here_gator"></div>
+                    <div class="here_egg"></div>
+                  </board-group>
+                </board-group>
+              </board-group>
+            </board-group>
+          </board-group>
+        </board-group>
+      </board-group>
+    </board-group>
+  </board>
+
   <script>
-    for (i = 0; i < 8; i++) (function() {
-      var gator = new Gator();
-      gator.setColor(i * 40);
-      gator.element.appendTo($("body"));
-      console.log(gator);
-      $("svg", gator.element).css("transform", "scale(" + String(1.2) + ")");
-      $("svg", gator.element).css("z-index", i);
-      var callback = function() {
-        if (Math.random() < 0.5) { gator.openJaw(); }
-        if (Math.random() < 0.5) { gator.closeJaw(); }
-      };
+  $(".here_egg").each( function() {
+    var egg = new Egg();
+    egg.setColor(Math.random() * 40);
+    $(this).replaceWith(egg.element);
+  });
 
-      window.setInterval(callback, 500 + Math.random() * 1000);
+    $(".here_gator").each( function() {
+        var gator = new Gator();
+        gator.setColor(Math.random() * 360);
+        $(this).replaceWith(gator.element);
+        window.setInterval(function() {
+          if (Math.random() < 0.5) { gator.openJaw(); }
+          if (Math.random() < 0.5) { gator.closeJaw(); }
+        }, 500 + Math.random() * 1000);
+    });
 
-      gator.element.appendTo($("body"));
-    } )()
+    $("board-group.col").mouseover(function(event) {
+      $(this).addClass("hover").parents().removeClass("hover");
+      event.stopPropagation();
+    }).mouseout(function(event) {
+      $(this).removeClass("hover");
+    }).click(function(event) {
+      var foo = $(this);
+      foo.addClass("eaten");
+      window.setTimeout(function() {
+        foo.remove();
+      }, 1000);
+      event.stopPropagation();
+    });
+
   </script>
 </body>
 </html>
