@@ -5,10 +5,6 @@ board {
   top: 50%; left: 50%;
 }
 
-egg, add-more {
-  padding: 10px;
-}
-
 gator svg:hover, egg svg:hover, add-more svg:hover {
   cursor: pointer;
   -webkit-filter: brightness(1.1) drop-shadow(0 0 2px black);
@@ -21,15 +17,20 @@ gator svg:hover, egg svg:hover, add-more svg:hover {
   transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(0deg) translate(204.654px, -644.378px);
   transition: transform 0.5s ease-out;
 }
-.open {
+.upper_jaw.open {
   transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(30deg) translate(204.654px, -644.378px);
 }
-.closed {
+.upper_jaw.closed {
   transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px);
 }
 
 board-group add-more {
   visibility: hidden;
+}
+
+board-group egg,
+board-group add-more {
+  padding: 10px;
 }
 
 board-group.col.hover > add-more,
@@ -54,7 +55,12 @@ board-group.col.hover > board-group.row > add-more {
 }
 
 
-gator, egg, add-more, board-group {
+
+
+board-group gator,
+board-group egg,
+board-group add-more,
+board-group {
   vertical-align: middle;
   text-align: center;
   white-space:nowrap;
@@ -90,4 +96,52 @@ board-group.hover.col {
   cursor: pointer;
   border-color: #beb;
   background: linear-gradient(0deg, #f3fff3, #fff);
+}
+
+.modal-overlay {
+  transition: opacity 0.2s ease-in;
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: #ccc;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.modal-overlay.shown {
+  opacity: 0.5;
+  pointer-events: all;
+}
+
+
+#new-selector {
+  vertical-align: middle;
+  text-align: center;
+  max-width: 500px;
+  padding: 30px;
+  z-index: 12;
+  position: absolute;
+  top: 50%; left: 50%;
+  border: 1px solid #999;
+  border-radius: 20px;
+  background-color: #fafafa;
+  box-shadow: 0 0 5px #aaaaaa;
+  transform: translate(-50%, -50%) scale(0);
+  transition: all 0.2s ease-in;
+  opacity: 0.9;
+  display: hidden;
+}
+
+#new-selector.shown {
+  transform: translate(-50%, -50%) scale(1) ;
+  display: inline-block;
+}
+
+
+#new-selector gator,
+#new-selector egg {
+  padding: 10px;
+  display: inline-block;
+  vertical-align: middle;
+  text-align: center;
 }

@@ -5,107 +5,47 @@
   <link rel="stylesheet" type="text/css" href="css/gators.css">
   <link rel="stylesheet" type="text/css" href="css/csshake.css">
   <script src="./sprites/sprites.js"></script>
-  <script src="./js/main.js"></script>
 </head>
 <body>
   <board>
-    <board-group class="row">
-      <board-group class="col">
-        <div class="here_gator"></div>
-        <board-group class="row">
-          <div class="here_egg"></div>
-          <div class="here_egg"></div>
-          <div class="here_addmore"></div>
-        </board-group>
-      </board-group>
-      <board-group class="col">
-        <div class="here_gator"></div>
-        <board-group class="row">
-          <div class="here_egg"></div>
-          <div class="here_addmore"></div>
-        </board-group>
-      </board-group>
-      <board-group class="col">
-        <div class="here_gator"></div>
-        <board-group class="row">
-          <board-group class="col">
-            <div class="here_gator"></div>
-            <board-group class="row">
-              <board-group class="col">
-                <div class="here_gator"></div>
-                <board-group class="row">
-                  <div class="here_egg"></div>
-                  <div class="here_addmore"></div>
-                </board-group>
-              </board-group>
-              <board-group class="col">
-                <div class="here_gator"></div>
-                <board-group class="row">
-                  <div class="here_egg"></div>
-                  <div class="here_egg"></div>
-                  <div class="here_egg"></div>
-                  <div class="here_egg"></div>
-                  <div class="here_addmore"></div>
-                </board-group>
-              </board-group>
-              <board-group class="col">
-                <div class="here_gator"></div>
-                <board-group class="row">
-                  <div class="here_egg"></div>
-                  <board-group class="col">
-                    <div class="here_gator"></div>
-                    <board-group class="row">
-                      <div class="here_egg"></div>
-                      <div class="here_addmore"></div>
-                    </board-group>
-                  </board-group>
-                </board-group>
-              </board-group>
-              <div class="here_addmore"></div>
-            </board-group>
-          </board-group>
-          <div class="here_addmore"></div>
-        </board-group>
-      </board-group>
-      <div class="here_addmore"></div>
-    </board-group>
   </board>
+  <div class="modal-overlay"></div>
+  <div class="modal" id="new-selector">
 
+    <div class="here_egg"></div>
+  <div class="here_egg"></div>
+  <div class="here_egg"></div>
+  <div class="here_egg"></div></div>
+  <script src="./js/main.js"></script>
   <script>
+
+  var family = new Family(undefined, 0);
+  $("board").append(family.element);
+
   $(".here_egg").each( function() {
-    var egg = new Egg();
-    egg.setColor(Math.random() * 40);
-    $(this).replaceWith(egg.element);
+   var egg = new Egg();
+   egg.setColor(Math.random() * 40);
+   $(this).replaceWith(egg.element);
   });
 
-  $(".here_addmore").each( function() {
-    var egg = new AddMore();
-    $(this).replaceWith(egg.element);
-  });
-
-    $(".here_gator").each( function() {
-        var gator = new Gator();
-        gator.setColor(Math.random() * 360);
-        $(this).replaceWith(gator.element);
-        window.setInterval(function() {
-          if (Math.random() < 0.5) { gator.openJaw(); }
-          if (Math.random() < 0.5) { gator.closeJaw(); }
-        }, 500 + Math.random() * 1000);
-    });
-
-    $("board-group.col").mouseover(function(event) {
-      $(this).addClass("hover").parents().removeClass("hover");
-      event.stopPropagation();
-    }).mouseout(function(event) {
-      $(this).removeClass("hover");
-    }).click(function(event) {
-      var foo = $(this);
-      foo.addClass("eaten");
-      window.setTimeout(function() {
-        foo.remove();
-      }, 1000);
-      event.stopPropagation();
-    });
+  //
+  // $(".here_addmore").each( function() {
+  //   var egg = new AddMore();
+  //   $(this).replaceWith(egg.element);
+  // });
+  //   var i = 0;
+  //   $(".here_gator").each( function() {
+  //       var gator = new Gator();
+  //
+  //       gator.setColor(360 * ((1.618033988749895 *  i) % 1));
+  //
+  //       i = i + 1;
+  //       $(this).replaceWith(gator.element);
+  //       window.setInterval(function() {
+  //         if (Math.random() < 0.5) { gator.openJaw(); }
+  //         if (Math.random() < 0.5) { gator.closeJaw(); }
+  //       }, 500 + Math.random() * 1000);
+  //   });
 
   </script>
 </body>

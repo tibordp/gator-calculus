@@ -1,3 +1,13 @@
+$('.modal-overlay').on("click", function() {
+    $('.modal-overlay').removeClass("shown");
+    $('.modal').removeClass("shown");
+});
+
+function Sprite(sprite_name, tag_name) {
+  this.element = $(document.createElement(tag_name || "sprite"));
+  this.element.html(Sprites[sprite_name]);
+}
+
 function Gator() {
   this.element = $(document.createElement("gator"));
   this.element.html(Sprites["alligator.svg"]);
@@ -28,15 +38,10 @@ Gator.prototype.setColor = function(color) {
   $(".colored", this.element).css("fill", "hsl(" + String(color) + ", 50%, 50%)");
 }
 
-function Egg() {
+function Egg(color) {
   this.element = $(document.createElement("egg"));
   this.element.html(Sprites["egg.svg"]);
-  this.setColor(0);
-  var egg = this;
-  $("svg", this.element).click(function(event) {
-    egg.shake();
-    event.stopPropagation();
-  });
+  this.setColor(color);
 }
 
 Egg.prototype.shake = function () {
@@ -50,18 +55,71 @@ Egg.prototype.setColor = function(color) {
   $(".colored", this.element).css("fill", "hsl(" + String(color) + ", 50%, 50%)");
 }
 
-function AddMore() {
-  this.element = $(document.createElement("add-more"));
-  this.element.html(Sprites["add-more.svg"]);
-  var egg = this;
-  $("svg", this.element).click(function(event) {
-    egg.shake();
+function Family(parent, color) {
+  var family = this;
+
+  this.parent = parent;
+  this.bound_eggs = [];
+  this.gator = new Gator();
+  this.add_more = new Sprite("add-more.svg", "add-more");
+  this.add_more.element.click(function(event) {
+    $('.modal-overlay').addClass("shown");
+    var modal = $('#new-selector')
+      .empty()
+      .addClass("shown");
+
+    var oldGator = new Sprite("old-gator.svg", "gator");
+    oldGator.element.appendTo(modal);
+    var rainbowGator = new Sprite("colored-gator.svg", "gator");
+    rainbowGator.element.appendTo(modal);
+    $("<br>").appendTo(modal);
+
+    Object.keys(family.possibleEggs()).forEach(function(color) {
+      for (var i = 0; i < 10; ++i) {
+      var selectEgg = new Egg(color);
+      selectEgg.element.appendTo(modal); }
+    });
+
+    event.stopPropagation();
+    event.preventDefault();
+  });
+
+  this.setColor(color);
+
+  this.row = $(document.createElement("board-group")).addClass("row")
+  .append(this.add_more.element);
+  this.element = $(document.createElement("board-group")).addClass("col")
+  .append(this.gator.element)
+  .append(this.row)
+  .mouseover(function(event) {
+    $(this).addClass("hover").parents().removeClass("hover");
+    event.stopPropagation();
+  }).mouseout(function(event) {
+    $(this).removeClass("hover");
+  }).click(function(event) {
+    var foo = $(this);
+    foo.addClass("eaten");
+    window.setTimeout(function() {
+      foo.remove();
+    }, 1000);
     event.stopPropagation();
   });
 }
 
-AddMore.prototype.shake = function () {
-  var element = this.element;
-  element.addClass("shake shake-constant");
-  window.setTimeout(function() { element.removeClass("shake shake-constant"); },1000)
+Family.prototype.possibleEggs = function(color) {
+  var possibleColors = {};
+  var current = this;
+  while (current) {
+    possibleColors[current.color] = true;
+    current = current.parent;
+  }
+  return possibleColors;
+}
+
+Family.prototype.setColor = function(color) {
+  this.color = color;
+  this.gator.setColor(color);
+  this.bound_eggs.forEach(function(egg) {
+    egg.setColor(color);
+  })
 }
