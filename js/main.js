@@ -1,16 +1,27 @@
-$('.modal-overlay').on("click", function() {
-    $('.modal-overlay').removeClass("shown");
-    $('.modal').removeClass("shown");
-});
+function modalClose() {
+  $('.modal-overlay').removeClass("shown");
+  $('.modal').removeClass("shown");
+}
+
+var color = 0;
+
+function nextColor() {
+  color += 1.618033988749894848204;
+  color %= 1;
+  return color * 360;
+}
+
+$('.modal-overlay').on("click", modalClose);
 
 function Sprite(sprite_name, tag_name) {
   this.element = $(document.createElement(tag_name || "sprite"));
   this.element.html(Sprites[sprite_name]);
 }
 
-function Gator() {
+function Gator(old) {
   this.element = $(document.createElement("gator"));
-  this.element.html(Sprites["alligator.svg"]);
+  this.old = !!old;
+  this.element.html(Sprites[old ? "old-gator.svg" : "alligator.svg"]);
   this.jaw = $(".upper_jaw", this.element);
   var gator = this;
   $("svg", this.element).click(function(event) {
@@ -55,12 +66,13 @@ Egg.prototype.setColor = function(color) {
   $(".colored", this.element).css("fill", "hsl(" + String(color) + ", 50%, 50%)");
 }
 
-function Family(parent, color) {
+function Family(parent, color, old_gator) {
   var family = this;
 
   this.parent = parent;
   this.bound_eggs = [];
-  this.gator = new Gator();
+  this.gator = new Gator(!!old_gator);
+
   this.add_more = new Sprite("add-more.svg", "add-more");
   this.add_more.element.click(function(event) {
     $('.modal-overlay').addClass("shown");
@@ -70,14 +82,31 @@ function Family(parent, color) {
 
     var oldGator = new Sprite("old-gator.svg", "gator");
     oldGator.element.appendTo(modal);
+
+    oldGator.element.click(function() {
+      var new_family = new Family(family, null, true);
+      new_family.element.insertBefore(family.add_more.element);
+      modalClose();
+    });
+
     var rainbowGator = new Sprite("colored-gator.svg", "gator");
     rainbowGator.element.appendTo(modal);
-    $("<br>").appendTo(modal);
 
+    rainbowGator.element.click(function() {
+      var new_family = new Family(family, nextColor());
+      new_family.element.insertBefore(family.add_more.element);
+      modalClose();
+    });
+
+    $("<br>").appendTo(modal);
     Object.keys(family.possibleEggs()).forEach(function(color) {
-      for (var i = 0; i < 10; ++i) {
       var selectEgg = new Egg(color);
-      selectEgg.element.appendTo(modal); }
+      selectEgg.element.appendTo(modal);
+      selectEgg.element.click(function() {
+        var new_egg = new Egg(color);
+        new_egg.element.insertBefore(family.add_more.element);
+        modalClose();
+      });
     });
 
     event.stopPropagation();
@@ -99,6 +128,14 @@ function Family(parent, color) {
   }).click(function(event) {
     var foo = $(this);
     foo.addClass("eaten");
+    var boardOffset = $("board").offset();
+    var fooOffset = foo.offset();
+
+    foo.css("transform", "translate(" +
+      String(boardOffset.left - fooOffset.left) + "px, "+
+      String(boardOffset.top - fooOffset.top)+"px) scale(0)"
+    );
+
     window.setTimeout(function() {
       foo.remove();
     }, 1000);
@@ -110,7 +147,7 @@ Family.prototype.possibleEggs = function(color) {
   var possibleColors = {};
   var current = this;
   while (current) {
-    possibleColors[current.color] = true;
+    if (!current.gator.old) possibleColors[current.color] = true;
     current = current.parent;
   }
   return possibleColors;

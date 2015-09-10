@@ -48,10 +48,9 @@ board-group.col.hover > board-group.row > add-more {
 
 .eaten {
   z-index: 9000;
-  transition: transform 1s ease-out;
-  transform: translateY(0px) translateX(-50px) scale(0,0) ;
-  transform-origin: left;
-  overflow: visible;
+  display: block;
+  transition: all 1s ease-out;
+  transform-origin: top left;
 }
 
 
@@ -64,7 +63,6 @@ board-group {
   vertical-align: middle;
   text-align: center;
   white-space:nowrap;
-  overflow:hidden;
 }
 
 board-group.row {
