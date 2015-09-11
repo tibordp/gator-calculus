@@ -84,57 +84,21 @@ function Family(parent, color, old_gator) {
   this.old_gator = !!old_gator;
   this.gator = new Gator(this.old_gator);
 
-  $("svg", this.gator.element).click(function(event) {
-    var eater = family.gator.element;
-    var eater_svg = $("svg", family.gator.element);
-    var eaten = family.element.next();
-
-    var eaten_family = eaten.data("reference");
-
-    if (!eaten_family) return;
-    var replacements = family.associatedEggs().map(function(egg) {
-      return { 'egg' : egg, 'replacement' : eaten_family.clone() };
+  if (this.old_gator)
+  {
+    $("svg", this.gator.element).click(function(event) {
+      family.dieOfAge();
+      event.stopPropagation();
     });
+  }
+  else
+  {
+    $("svg", this.gator.element).click(function(event) {
+      family.eat();
+      event.stopPropagation();
+    });
+  }
 
-    eater.addClass("eating");
-    eaten.addClass("eaten");
-
-    var deltax = eater.offset().left - eaten.offset().left +
-     (eater.outerWidth() - eaten.outerWidth()) / 2;
-    var deltay = eater.offset().top - eaten.offset().top +
-     (eater.outerHeight() - eaten.outerHeight()) / 2;
-    var angle = -Math.atan2(deltay, -deltax);
-
-
-    eater.css("transform", "rotate("+ String(angle) +"rad)");
-    eaten.css("transform", "translate(" + String(deltax) + "px, " +
-      String(deltay) + "px)  " + " scale(0)"
-    );
-
-    window.setTimeout(function() {
-      eater.css("transform", "inherit");
-    }, 2500);
-
-    window.setTimeout(function() {
-      eaten.remove();
-      eater.removeClass("eating");
-      family.gator.die(function() {
-        var children = family.row.children("egg, board-group");
-        console.log("foo", children, children.filter("board-group"))
-        children.filter("board-group").each( function() {
-            $(this).data("reference").parent = family.parent;
-        });
-        family.element.replaceWith(children);
-      });
-
-      replacements.forEach(function(data) {
-        data.egg.hatch(function() { data.egg.element.replaceWith(data.replacement.element); });
-      });
-    }, 3000);
-
-
-    event.stopPropagation();
-  });
 
   this.add_more = new Sprite("add-more.svg", "add-more");
   this.add_more.element.click(function(event) {
@@ -189,7 +153,76 @@ function Family(parent, color, old_gator) {
     $(this).removeClass("hover");
   });
 
+  $("board-group.row").sortable({ helper: "clone", axis: "x" });
   this.setColor(color);
+}
+
+Family.prototype.dieOfAge = function() {
+  var family = this;
+  var eater = family.gator.element;
+  var eater_svg = $("svg", family.gator.element);
+
+  var children = family.row.children("egg, board-group");
+  if (children.size() != 1) return;
+
+  family.gator.die(function() {
+    console.log("foo", children, children.filter("board-group"))
+    children.filter("board-group").each( function() {
+        $(this).data("reference").parent = family.parent;
+    });
+    family.element.replaceWith(children);
+  });
+
+}
+
+Family.prototype.eat = function() {
+  var family = this;
+  var eater = family.gator.element;
+  var eater_svg = $("svg", family.gator.element);
+  var eaten = family.element.next();
+
+  var eaten_family = eaten.data("reference");
+
+  if (!eaten_family) return;
+  var replacements = family.associatedEggs().map(function(egg) {
+    return { 'egg' : egg, 'replacement' : eaten_family.clone() };
+  });
+
+  eater.addClass("eating");
+  eaten.addClass("eaten");
+
+  var deltax = eater.offset().left - eaten.offset().left +
+   (eater.outerWidth() - eaten.outerWidth()) / 2;
+  var deltay = eater.offset().top - eaten.offset().top +
+   (eater.outerHeight() - eaten.outerHeight()) / 2;
+  var angle = -Math.atan2(deltay, -deltax);
+
+
+  eater.css("transform", "rotate("+ String(angle) +"rad)");
+  eaten.css("transform", "translate(" + String(deltax) + "px, " +
+    String(deltay) + "px)  " + " scale(0)"
+  );
+
+  window.setTimeout(function() {
+    eater.css("transform", "inherit");
+  }, 2500);
+
+  window.setTimeout(function() {
+    eaten.remove();
+    eater.removeClass("eating");
+    family.gator.die(function() {
+      var children = family.row.children("egg, board-group");
+      console.log("foo", children, children.filter("board-group"))
+      children.filter("board-group").each( function() {
+          $(this).data("reference").parent = family.parent;
+      });
+      family.element.replaceWith(children);
+    });
+
+    replacements.forEach(function(data) {
+      data.egg.hatch(function() { data.egg.element.replaceWith(data.replacement.element); });
+    });
+  }, 3000);
 }
 
 Family.prototype.associatedEggs = function(color) {
