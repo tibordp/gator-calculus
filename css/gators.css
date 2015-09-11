@@ -31,6 +31,7 @@ gator svg:hover, egg svg:hover, add-more svg:hover {
 
 board-group add-more {
   visibility: hidden;
+  display: inline-block;
 }
 
 board-group egg,
@@ -44,11 +45,13 @@ board-group.col.hover > board-group.row > add-more {
 }
 
 .dying  {
-  transition: all 2s ease-out;
-  -webkit-filter: hue-rotate(720deg) brightness(4);
-  -moz-filter: hue-rotate(720deg) brightness(4);
-  -ms-filter: hue-rotate(720deg) brightness(4);
-  filter: hue-rotate(720deg) brightness(4);
+  transition: all 1s ease-in;
+  -webkit-filter: hue-rotate(360deg) brightness(2);
+  -moz-filter: hue-rotate(360deg) brightness(2);
+  -ms-filter: hue-rotate(360deg) brightness(2);
+  filter: hue-rotate(360deg) brightness(2);
+
+  transform: rotate(-180deg);
 }
 
 gator {
@@ -87,6 +90,8 @@ board-group {
 board-group.row {
   display: inline-block;
   border: 1px solid transparent;
+  min-height: 3em;
+  min-width: 5em;
 }
 
 svg { pointer-events: none; }
@@ -101,8 +106,7 @@ board-group.col {
   margin: 5px;
 }
 
-
-board-group.col > * {
+board-group.col > gator {
   display: block;
 }
 
@@ -162,4 +166,20 @@ board-group.hover.col {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
+}
+
+.drag-placeholder {
+  border: 1px dashed #7a7;
+  min-width: 5em;
+  min-height: 5em;
+}
+
+.collapsed * {
+  display: none;
+}
+
+.collapsed {
+  border-radius: 20px;
+  padding: 10px;
+  background-color: #f77
 }

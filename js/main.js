@@ -29,7 +29,7 @@ function Gator(old) {
 
 Gator.prototype.die = function(callback) {
   var gator = this;
-  this.element.addClass("shake shake-constant shake-rotate dying");
+  this.element.addClass("dying");
   window.setTimeout(function() {
   }, 500);
   window.setTimeout(function() {
@@ -76,10 +76,9 @@ Egg.prototype.setColor = function(color) {
   $(".colored", this.element).css("fill", "hsl(" + String(color) + ", 50%, 50%)");
 }
 
-function Family(parent, color, old_gator) {
+function Family(color, old_gator) {
   var family = this;
 
-  this.parent = parent;
   this.bound_eggs = [];
   this.old_gator = !!old_gator;
   this.gator = new Gator(this.old_gator);
@@ -110,8 +109,8 @@ function Family(parent, color, old_gator) {
     var oldGator = new Sprite("old-gator.svg", "gator");
     oldGator.element.appendTo(modal);
     oldGator.element.click(function() {
-      var new_family = new Family(family, null, true);
-      new_family.element.insertBefore(family.add_more.element);
+      var new_family = new Family(null, true);
+      family.row.append(new_family.element);
       modalClose();
     });
 
@@ -119,8 +118,8 @@ function Family(parent, color, old_gator) {
     rainbowGator.element.appendTo(modal);
 
     rainbowGator.element.click(function() {
-      var new_family = new Family(family, nextColor());
-      new_family.element.insertBefore(family.add_more.element);
+      var new_family = new Family(nextColor());
+      family.row.append(new_family.element);
       modalClose();
     });
 
@@ -130,7 +129,7 @@ function Family(parent, color, old_gator) {
       selectEgg.element.appendTo(modal);
       selectEgg.element.click(function() {
         var new_egg = new Egg(color);
-        new_egg.element.insertBefore(family.add_more.element);
+        family.row.append(new_egg.element);
         modalClose();
       });
     });
@@ -141,19 +140,30 @@ function Family(parent, color, old_gator) {
 
 
   this.row = $(document.createElement("board-group")).addClass("row")
-  .append(this.add_more.element);
   this.element = $(document.createElement("board-group")).addClass("col")
   .data("reference", this)
   .append(this.gator.element)
   .append(this.row)
+  .append(this.add_more.element)
   .mouseover(function(event) {
     $(this).addClass("hover").parents().removeClass("hover");
     event.stopPropagation();
   }).mouseout(function(event) {
     $(this).removeClass("hover");
+  }).click(function() {
+    family.element.toggleClass("collapsed");
+    event.stopPropagation();
   });
 
-  $("board-group.row").sortable({ helper: "clone", axis: "x" });
+  this.row.sortable({
+    distance: 5,
+    opacity: 0,
+    cursorAt: { top: 5, left: 5 },
+    tolerance: "pointer",
+    items: "board-group.col, egg",
+    placeholder: "drag-placeholder",
+    connectWith: "board-group.row"
+  }).disableSelection();
   this.setColor(color);
 }
 
@@ -166,10 +176,6 @@ Family.prototype.dieOfAge = function() {
   if (children.size() != 1) return;
 
   family.gator.die(function() {
-    console.log("foo", children, children.filter("board-group"))
-    children.filter("board-group").each( function() {
-        $(this).data("reference").parent = family.parent;
-    });
     family.element.replaceWith(children);
   });
 
@@ -204,7 +210,7 @@ Family.prototype.eat = function() {
   );
 
   window.setTimeout(function() {
-    eater.css("transform", "inherit");
+    eater.css("transform", "");
   }, 2500);
 
   window.setTimeout(function() {
@@ -213,9 +219,6 @@ Family.prototype.eat = function() {
     family.gator.die(function() {
       var children = family.row.children("egg, board-group");
       console.log("foo", children, children.filter("board-group"))
-      children.filter("board-group").each( function() {
-          $(this).data("reference").parent = family.parent;
-      });
       family.element.replaceWith(children);
     });
 
@@ -245,13 +248,13 @@ Family.prototype.associatedEggs = function(color) {
 }
 
 Family.prototype.clone = function() {
-  var new_family = new Family(this.parent, this.color, this.old_gator);
+  var new_family = new Family(this.color, this.old_gator);
   var family = this;
 
   this.row.children("egg, board-group").each(function() {
     console.log($(this), $(this).data("reference"))
     var new_object = $(this).data("reference").clone();
-    new_object.element.insertBefore(new_family.add_more.element);
+    new_family.row.append(new_object.element);
   });
 
   return new_family;
@@ -262,7 +265,9 @@ Family.prototype.possibleEggs = function(color) {
   var current = this;
   while (current) {
     if (!current.gator.old) possibleColors[current.color] = true;
-    current = current.parent;
+    var parent_element = current.element.parents("board-group.col").first();
+    if (!parent_element) break;
+    current = parent_element.data("reference");
   }
   return possibleColors;
 }
@@ -272,7 +277,9 @@ Family.prototype.getZoom = function(color) {
   var current = this;
   while (current) {
     zoom *= 0.95;
-    current = current.parent;
+    var parent_element = current.element.parents("board-group.col").first();
+    if (!parent_element) break;
+    current = parent_element.data("reference");
   }
   return zoom;
 }
