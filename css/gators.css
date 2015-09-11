@@ -15,13 +15,18 @@ gator svg:hover, egg svg:hover, add-more svg:hover {
 
 .upper_jaw {
   transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(0deg) translate(204.654px, -644.378px);
-  transition: transform 0.5s ease-out;
 }
-.upper_jaw.open {
-  transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(30deg) translate(204.654px, -644.378px);
-}
-.upper_jaw.closed {
-  transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px);
+
+
+@keyframes eating-jaw {
+    0%   { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(0deg) translate(204.654px, -644.378px); }
+    20%  { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(30deg) translate(204.654px, -644.378px);  }
+    36% { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px); }
+    43% { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-20deg) translate(204.654px, -644.378px); }
+    50% { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px); }
+    56% { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-20deg) translate(204.654px, -644.378px); }
+    63% { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px); }
+    100% { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(0deg) translate(204.654px, -644.378px); }
 }
 
 board-group add-more {
@@ -46,14 +51,28 @@ board-group.col.hover > board-group.row > add-more {
   filter: hue-rotate(720deg) brightness(4);
 }
 
-.eaten {
-  z-index: 9000;
-  display: block;
-  transition: all 1s ease-out;
-  transform-origin: top left;
+gator {
+  transition: all 0.5s ease-out;
 }
 
+.eating {
+  z-index: 9001;
+  position: relative;
+  transform-origin: middle;
+}
 
+.eating .upper_jaw {
+  animation-name: eating-jaw;
+  animation-duration: 3s;
+  transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(-30deg) translate(204.654px, -644.378px);
+}
+
+.eaten {
+  z-index: 9000;
+  position: relative;
+  transition: all 1s ease-out;
+  transform-origin: middle;
+}
 
 
 board-group gator,
@@ -79,6 +98,7 @@ board-group.col {
   border: 1px solid #eee;
   border-radius: 20px;
   padding: 5px;
+  margin: 5px;
 }
 
 
