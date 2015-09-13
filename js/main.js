@@ -76,7 +76,9 @@ Egg.prototype.clone = function (callback) {
 
 Egg.prototype.hatch = function (callback) {
   var element = this.element;
-  element.addClass("shake shake-constant");
+  window.setTimeout(function() {
+    element.addClass("shake shake-constant");
+  }, Math.random() * 100);
   window.setTimeout(function() {
     element.removeClass("shake shake-constant");
     if (callback) callback();
@@ -141,12 +143,6 @@ function Family(color, old_gator) {
   this.setColor(color);
 }
 
-$('body').droppable({
-    drop: function ( event, ui ) {
-        ui.draggable.remove();
-    }
-});
-
 Family.prototype.dieOfAge = function() {
   var family = this;
   var eater = family.gator.element;
@@ -155,6 +151,7 @@ Family.prototype.dieOfAge = function() {
   var children = family.row.element.children("egg, board-group");
   if (children.size() != 1) return;
 
+  eater.addClass("dying");
   family.gator.die(function() {
     family.element.replaceWith(children);
   });
@@ -299,12 +296,6 @@ Family.prototype.getZoom = function(color) {
   return zoom;
 }
 
-$('body').droppable({
-    drop: function ( event, ui ) {
-        ui.draggable.remove();
-    }
-});
-
 Family.prototype.setColor = function(color) {
   this.associatedEggs().forEach(function(egg) {
     egg.setColor(color);
@@ -322,8 +313,11 @@ function Row(family) {
     tolerance: "pointer",
     items: "board-group.col, egg",
     placeholder: "drag-placeholder",
-    connectWith: "board-group.row, delete"
-  }).droppable({greedy: true});
+    connectWith: "board-group.row",
+    forcePlaceholderSize: true
+  });
+
+
 
   this.add_more = new Sprite("add-more.svg", "add-more");
   this.add_more.element.click(function(event) {
