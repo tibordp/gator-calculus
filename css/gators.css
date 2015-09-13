@@ -1,8 +1,50 @@
+toolbar {
+  z-index: 10;
+  height: 45px;
+  border: 2px solid #ccc;
+  background: linear-gradient(0deg, #fcfcfc, #fff);
+  position: fixed;
+  border-radius: 15px;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  padding-left: 10px;
+}
+
+toolbar {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  overflow: hidden;
+}
+
 board {
   display: block;
   position: absolute;
   transform: translate(-50%, -50%) scale(1) ;
   top: 50%; left: 50%;
+}
+
+gator {
+  width: 180px;
+  height: 100px;
+}
+
+gator.short {
+  height: 72px;
+}
+
+
+egg {
+  height: 27px;
+  width: 40px;
+}
+
+add-more {
+  height: 27px;
+  width: 40px;
 }
 
 gator svg:hover, egg svg:hover, add-more svg:hover {
@@ -11,6 +53,10 @@ gator svg:hover, egg svg:hover, add-more svg:hover {
   -moz-filter: brightness(1.1) drop-shadow(0 0 2px black);
   -ms-filter: brightness(1.1) drop-shadow(0 0 2px black);
   filter: brightness(1.1) drop-shadow(0 0 2px black);
+}
+
+.colored {
+  transition: all 0.5s ease-in;
 }
 
 .upper_jaw {
@@ -31,11 +77,14 @@ gator svg:hover, egg svg:hover, add-more svg:hover {
 
 board-group add-more {
   visibility: hidden;
+}
+
+add-more {
   display: inline-block;
 }
 
 board-group egg,
-board-group add-more {
+add-more {
   padding: 10px;
 }
 
@@ -45,11 +94,11 @@ board-group.col.hover > board-group.row > add-more {
 }
 
 .dying  {
-  transition: all 1s ease-in;
-  -webkit-filter: hue-rotate(360deg) brightness(2);
-  -moz-filter: hue-rotate(360deg) brightness(2);
-  -ms-filter: hue-rotate(360deg) brightness(2);
-  filter: hue-rotate(360deg) brightness(2);
+  transition: all 1.4s ease-in-out;
+  -webkit-filter: hue-rotate(720deg) brightness(5);
+  -moz-filter: hue-rotate(720deg) brightness(5);
+  -ms-filter: hue-rotate(720deg) brightness(5);
+  filter: hue-rotate(720deg) brightness(5);
 
   transform: rotate(-180deg);
 }
@@ -78,18 +127,20 @@ gator {
 }
 
 
-board-group gator,
-board-group egg,
-board-group add-more,
+board,
 board-group {
   vertical-align: middle;
   text-align: center;
   white-space:nowrap;
 }
 
+
 board-group.row {
   display: inline-block;
   border: 1px solid transparent;
+}
+
+board-group.col board-group.row {
   min-height: 3em;
   min-width: 5em;
 }
@@ -135,6 +186,18 @@ board-group.hover.col {
   pointer-events: all;
 }
 
+.modal {
+  opacity: 0.9;
+  display: hidden;
+  transform: translate(-50%, -50%) scale(0);
+  transition: all 0.2s ease-in;
+}
+
+.modal.shown {
+  transform: translate(-50%, -50%) scale(1) ;
+  display: inline-block;
+}
+
 
 #new-selector {
   vertical-align: middle;
@@ -148,17 +211,28 @@ board-group.hover.col {
   border-radius: 20px;
   background-color: #fafafa;
   box-shadow: 0 0 5px #aaaaaa;
-  transform: translate(-50%, -50%) scale(0);
-  transition: all 0.2s ease-in;
-  opacity: 0.9;
-  display: hidden;
 }
 
-#new-selector.shown {
-  transform: translate(-50%, -50%) scale(1) ;
-  display: inline-block;
+#family-modal i.fa {
+  font-size: 30pt;
+  padding: 10px;
+  color: #2 31f20;
 }
 
+
+#family-modal {
+  vertical-align: middle;
+  text-align: center;
+  max-width: 500px;
+  padding: 30px;
+  z-index: 12;
+  position: absolute;
+  top: 50%; left: 50%;
+  border: 1px solid #999;
+  border-radius: 20px;
+  background-color: #fafafa;
+  box-shadow: 0 0 5px #aaaaaa;
+}
 
 #new-selector gator,
 #new-selector egg {
@@ -182,4 +256,26 @@ board-group.hover.col {
   border-radius: 20px;
   padding: 10px;
   background-color: #f77
+}
+
+#family-modal i.fa:hover {
+ cursor: pointer;
+ -webkit-filter: brightness(1.1) drop-shadow(0 0 2px black);
+ -moz-filter: brightness(1.1) drop-shadow(0 0 2px black);
+ -ms-filter: brightness(1.1) drop-shadow(0 0 2px black);
+ filter: brightness(1.1) drop-shadow(0 0 2px black);
+}
+
+toolbar i.fa:hover {
+ cursor: pointer;
+ -webkit-filter: drop-shadow(0 0 2px #ccc);
+ -moz-filter: drop-shadow(0 0 2px #ccc);
+ -ms-filter: drop-shadow(0 0 2px #ccc);
+ filter: drop-shadow(0 0 2px #ccc);
+}
+
+toolbar i.fa {
+  font-size: 25pt;
+  padding: 5px;
+  color: #999;
 }

@@ -5,49 +5,28 @@
   <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <link rel="stylesheet" type="text/css" href="css/gators.css">
   <link rel="stylesheet" type="text/css" href="css/csshake.css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   <script src="./sprites/sprites.js"></script>
 </head>
 <body>
+  <toolbar>
+    <i id="toolbar-zoomin" class="fa fa-search-plus"></i>
+    <i id="toolbar-zoomout" class="fa fa-search-minus"></i>
+  </toolbar>
   <board>
   </board>
   <div class="modal-overlay"></div>
-  <div class="modal" id="new-selector">
-
-    <div class="here_egg"></div>
-  <div class="here_egg"></div>
-  <div class="here_egg"></div>
-  <div class="here_egg"></div></div>
+  <div class="modal" id="new-selector"></div>
+  <div class="modal" id="family-modal">
+    <i id="context-delete" class="fa fa-trash-o"></i>
+    <i id="context-clone" class="fa fa-clone"></i>
+  </div>
+  <div id="slider"></div>
   <script src="./js/main.js"></script>
   <script>
-
-  var family = new Family(0);
-  $("board").append(family.element);
-
-  $(".here_egg").each( function() {
-   var egg = new Egg();
-   egg.setColor(Math.random() * 40);
-   $(this).replaceWith(egg.element);
-  });
-
-  //
-  // $(".here_addmore").each( function() {
-  //   var egg = new AddMore();
-  //   $(this).replaceWith(egg.element);
-  // });
-  //   var i = 0;
-  //   $(".here_gator").each( function() {
-  //       var gator = new Gator();
-  //
-  //       gator.setColor(360 * ((1.618033988749895 *  i) % 1));
-  //
-  //       i = i + 1;
-  //       $(this).replaceWith(gator.element);
-  //       window.setInterval(function() {
-  //         if (Math.random() < 0.5) { gator.openJaw(); }
-  //         if (Math.random() < 0.5) { gator.closeJaw(); }
-  //       }, 500 + Math.random() * 1000);
-  //   });
-
+    $( "#slider" ).slider();
+    var row = new Row()
+    $("board").append(row.element).append(row.add_more.element.addClass("primary"));
   </script>
 </body>
 </html>

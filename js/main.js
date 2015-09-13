@@ -4,6 +4,19 @@ function modalClose() {
 }
 
 var color = 0;
+var zoom = 1;
+
+$("#toolbar-zoomin").click(function() {
+  zoom *= 1.1;
+  if (zoom > 1) zoom = 1; // Gators don't scale well :(
+  $("board").css("transform", "translate(-50%, -50%) scale(" + String(zoom) + ")");
+});
+
+$("#toolbar-zoomout").click(function() {
+
+  zoom /= 1.1;
+  $("board").css("transform", "translate(-50%, -50%) scale(" + String(zoom) + ")");
+});
 
 function nextColor() {
   color += 1.618033988749894848204;
@@ -98,87 +111,70 @@ function Family(color, old_gator) {
     });
   }
 
-
-  this.add_more = new Sprite("add-more.svg", "add-more");
-  this.add_more.element.click(function(event) {
-    $('.modal-overlay').addClass("shown");
-    var modal = $('#new-selector')
-      .empty()
-      .addClass("shown");
-
-    var oldGator = new Sprite("old-gator.svg", "gator");
-    oldGator.element.appendTo(modal);
-    oldGator.element.click(function() {
-      var new_family = new Family(null, true);
-      family.row.append(new_family.element);
-      modalClose();
-    });
-
-    var rainbowGator = new Sprite("colored-gator.svg", "gator");
-    rainbowGator.element.appendTo(modal);
-
-    rainbowGator.element.click(function() {
-      var new_family = new Family(nextColor());
-      family.row.append(new_family.element);
-      modalClose();
-    });
-
-    $("<br>").appendTo(modal);
-    Object.keys(family.possibleEggs()).forEach(function(color) {
-      var selectEgg = new Egg(color);
-      selectEgg.element.appendTo(modal);
-      selectEgg.element.click(function() {
-        var new_egg = new Egg(color);
-        family.row.append(new_egg.element);
-        modalClose();
-      });
-    });
-
-    event.stopPropagation();
-    event.preventDefault();
-  });
-
-
-  this.row = $(document.createElement("board-group")).addClass("row")
+  this.row = new Row(this);
   this.element = $(document.createElement("board-group")).addClass("col")
   .data("reference", this)
   .append(this.gator.element)
-  .append(this.row)
-  .append(this.add_more.element)
+  .append(this.row.element)
+  .append(this.row.add_more.element)
   .mouseover(function(event) {
     $(this).addClass("hover").parents().removeClass("hover");
     event.stopPropagation();
   }).mouseout(function(event) {
     $(this).removeClass("hover");
   }).click(function() {
-    family.element.toggleClass("collapsed");
+    $('.modal-overlay').addClass("shown");
+    var modal = $('#family-modal')
+    .addClass("shown");
     event.stopPropagation();
+
+    $("#context-delete").off("click").on("click", function() {
+      family.element.remove();
+      modalClose();
+    });
+
+    $("#context-clone").off("click").on("click", function() {
+      family.clone().element.insertAfter(family.element);
+      modalClose();
+    });
   });
 
-  this.row.sortable({
-    distance: 5,
-    opacity: 0,
-    cursorAt: { top: 5, left: 5 },
-    tolerance: "pointer",
-    items: "board-group.col, egg",
-    placeholder: "drag-placeholder",
-    connectWith: "board-group.row"
-  }).disableSelection();
   this.setColor(color);
 }
+
+$('body').droppable({
+    drop: function ( event, ui ) {
+        ui.draggable.remove();
+    }
+});
 
 Family.prototype.dieOfAge = function() {
   var family = this;
   var eater = family.gator.element;
   var eater_svg = $("svg", family.gator.element);
 
-  var children = family.row.children("egg, board-group");
+  var children = family.row.element.children("egg, board-group");
   if (children.size() != 1) return;
 
   family.gator.die(function() {
     family.element.replaceWith(children);
   });
+}
 
+Family.prototype.allColors = function() {
+  var family = this;
+  var result = {};
+  if (!this.old_gator) result[this.color]  = [ this ];
+
+  this.row.element.children("board-group").each(function() {
+    var family = $(this).data("reference");
+    var childColors = family.allColors();
+    for (var color in childColors) {
+      if (!(color in result)) result[color] = [];
+      Array.prototype.push.apply(result[color], childColors[color]);
+    }
+  });
+  return result;
 }
 
 Family.prototype.eat = function() {
@@ -186,27 +182,30 @@ Family.prototype.eat = function() {
   var eater = family.gator.element;
   var eater_svg = $("svg", family.gator.element);
   var eaten = family.element.next();
-
   var eaten_family = eaten.data("reference");
 
-  if (!eaten_family) return;
-  var replacements = family.associatedEggs().map(function(egg) {
-    return { 'egg' : egg, 'replacement' : eaten_family.clone() };
-  });
+  var hasToRename = eaten.is("board-group") &&
+    Family.checkAlpha(this, eaten_family);
 
-  eater.addClass("eating");
-  eaten.addClass("eaten");
+  window.setTimeout(function() {
+    if (!eaten_family) return;
+    var replacements = family.associatedEggs().map(function(egg) {
+      return { 'egg' : egg, 'replacement' : eaten_family.clone() };
+    });
 
-  var deltax = eater.offset().left - eaten.offset().left +
-   (eater.outerWidth() - eaten.outerWidth()) / 2;
-  var deltay = eater.offset().top - eaten.offset().top +
-   (eater.outerHeight() - eaten.outerHeight()) / 2;
-  var angle = -Math.atan2(deltay, -deltax);
+    eater.addClass("eating");
+    eaten.addClass("eaten");
+
+    var deltax = eater.offset().left - eaten.offset().left +
+    zoom * (eater.outerWidth() - eaten.outerWidth()) / 2;
+    var deltay = eater.offset().top - eaten.offset().top +
+    zoom * (eater.outerHeight() - eaten.outerHeight()) / 2;
+    var angle = -Math.atan2(deltay, -deltax);
 
 
-  eater.css("transform", "rotate("+ String(angle) +"rad)");
-  eaten.css("transform", "translate(" + String(deltax) + "px, " +
-    String(deltay) + "px)  " + " scale(0)"
+    eater.css("transform", "rotate("+ String(angle) +"rad)");
+    eaten.css("transform", "translate(" + String(deltax / zoom) + "px, " +
+    String(deltay / zoom) + "px)  " + " scale(0)"
   );
 
   window.setTimeout(function() {
@@ -217,8 +216,7 @@ Family.prototype.eat = function() {
     eaten.remove();
     eater.removeClass("eating");
     family.gator.die(function() {
-      var children = family.row.children("egg, board-group");
-      console.log("foo", children, children.filter("board-group"))
+      var children = family.row.element.children("egg, board-group");
       family.element.replaceWith(children);
     });
 
@@ -226,6 +224,7 @@ Family.prototype.eat = function() {
       data.egg.hatch(function() { data.egg.element.replaceWith(data.replacement.element); });
     });
   }, 3000);
+}, hasToRename ? 1000 : 0);
 }
 
 Family.prototype.associatedEggs = function(color) {
@@ -234,12 +233,12 @@ Family.prototype.associatedEggs = function(color) {
   var family = this;
   var result = [];
 
-  this.row.children("egg").each(function() {
+  this.row.element.children("egg").each(function() {
     var egg = $(this).data("reference");
     if (egg.color == color) result.push(egg);
   });
 
-  this.row.children("board-group").each(function() {
+  this.row.element.children("board-group").each(function() {
     var family = $(this).data("reference");
     Array.prototype.push.apply(result, family.associatedEggs(color));
   });
@@ -251,13 +250,29 @@ Family.prototype.clone = function() {
   var new_family = new Family(this.color, this.old_gator);
   var family = this;
 
-  this.row.children("egg, board-group").each(function() {
-    console.log($(this), $(this).data("reference"))
+  this.row.element.children("egg, board-group").each(function() {
     var new_object = $(this).data("reference").clone();
-    new_family.row.append(new_object.element);
+    new_family.row.element.append(new_object.element);
   });
 
   return new_family;
+}
+
+Family.checkAlpha = function(eater, eaten) {
+  var eaterColors = eater.allColors();
+  var eatenColors = eaten.allColors();
+
+  var result = false;
+  Object.keys(eatenColors).forEach(function(color) {
+    if (color in eaterColors)
+    {
+      eatenColors[color].forEach(function(family) {
+        family.setColor(nextColor());
+        result = true;
+      });
+    }
+  })
+  return result;
 }
 
 Family.prototype.possibleEggs = function(color) {
@@ -284,10 +299,71 @@ Family.prototype.getZoom = function(color) {
   return zoom;
 }
 
+$('body').droppable({
+    drop: function ( event, ui ) {
+        ui.draggable.remove();
+    }
+});
+
 Family.prototype.setColor = function(color) {
-  this.color = color;
-  this.gator.setColor(color);
   this.associatedEggs().forEach(function(egg) {
     egg.setColor(color);
   })
+  this.color = color;
+  this.gator.setColor(color);
+}
+
+function Row(family) {
+  var row = this;
+
+  this.element = $(document.createElement("board-group")).addClass("row");
+  this.element.sortable({
+    distance: 5,
+    tolerance: "pointer",
+    items: "board-group.col, egg",
+    placeholder: "drag-placeholder",
+    connectWith: "board-group.row, delete"
+  }).droppable({greedy: true});
+
+  this.add_more = new Sprite("add-more.svg", "add-more");
+  this.add_more.element.click(function(event) {
+    $('.modal-overlay').addClass("shown");
+    var modal = $('#new-selector')
+    .empty()
+    .addClass("shown");
+
+    var oldGator = new Sprite("old-gator.svg", "gator");
+    oldGator.element.addClass("short");
+    oldGator.element.appendTo(modal);
+    oldGator.element.click(function() {
+      var new_family = new Family(null, true);
+      row.element.append(new_family.element);
+      modalClose();
+    });
+
+    var rainbowGator = new Sprite("colored-gator.svg", "gator");
+    rainbowGator.element.addClass("short");
+    rainbowGator.element.appendTo(modal);
+    rainbowGator.element.click(function() {
+      var new_family = new Family(nextColor());
+      row.element.append(new_family.element);
+      modalClose();
+    });
+
+    if (family) {
+      $("<br>").appendTo(modal);
+      Object.keys(family.possibleEggs()).forEach(function(color) {
+        var selectEgg = new Egg(color);
+        selectEgg.element.appendTo(modal);
+        selectEgg.element.click(function() {
+          var new_egg = new Egg(color);
+          row.element.append(new_egg.element);
+          modalClose();
+        });
+      });
+    }
+
+    event.stopPropagation();
+    event.preventDefault();
+  });
 }
