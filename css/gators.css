@@ -30,6 +30,8 @@ board {
 gator {
   width: 180px;
   height: 100px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 gator.short {
@@ -100,7 +102,7 @@ board-group.col.hover > board-group.row > add-more {
   -ms-filter: hue-rotate(720deg) brightness(5);
   filter: hue-rotate(720deg) brightness(5);
 
-  transform: rotate(-180deg);
+  transform: translateY(20px) rotate(-180deg);
 }
 
 gator {
@@ -134,9 +136,7 @@ board-group {
   white-space:nowrap;
 }
 
-
 board-group.row {
-  display: inline-block;
   border: 1px solid transparent;
 }
 

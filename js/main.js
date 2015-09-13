@@ -34,7 +34,7 @@ function Sprite(sprite_name, tag_name) {
 function Gator(old) {
   this.element = $(document.createElement("gator"));
   this.old = !!old;
-  this.element.html(Sprites[old ? "old-gator.svg" : "alligator.svg"]);
+  this.element.html(Sprites[old ? "old-gator-true.svg" : "alligator.svg"]);
   this.jaw = $(".upper_jaw", this.element);
   var gator = this;
   this.setColor(0);
@@ -42,7 +42,6 @@ function Gator(old) {
 
 Gator.prototype.die = function(callback) {
   var gator = this;
-  this.element.addClass("dying");
   window.setTimeout(function() {
   }, 500);
   window.setTimeout(function() {
@@ -210,6 +209,7 @@ Family.prototype.eat = function() {
 
   window.setTimeout(function() {
     eater.css("transform", "");
+    eater.addClass("dying");
   }, 2500);
 
   window.setTimeout(function() {
