@@ -11,6 +11,10 @@ toolbar {
   padding-left: 10px;
 }
 
+body.fileover {
+  background-color: #efe;
+}
+
 toolbar {
   user-select: none;
   -webkit-user-select: none;
@@ -170,7 +174,7 @@ board-group.hover.col {
   background: linear-gradient(0deg, #f3fff3, #fff);
 }
 
-board-group.hover.col:empty(.row) {
+board-group.hover.col:  empty(.row) {
   border-color: #ebb;
   background: linear-gradient(0deg, #fff3f3, #fff);
 }
@@ -248,6 +252,8 @@ board-group.hover.col:empty(.row) {
 
 .drag-placeholder {
   border: 1px dashed #7a7;
+  min-width: 3em;
+  min-height: 3em;
 }
 
 .collapsed * {

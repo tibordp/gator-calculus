@@ -7,11 +7,14 @@
   <link rel="stylesheet" type="text/css" href="css/csshake.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   <script src="./sprites/sprites.js"></script>
+  <script src="./js/filesaver.js"></script>
 </head>
 <body>
   <toolbar>
-    <i id="toolbar-zoomin" class="fa fa-search-plus"></i>
-    <i id="toolbar-zoomout" class="fa fa-search-minus"></i>
+    <i id="toolbar-clear" class="fa fa-file-o"></i>
+    <i id="toolbar-save" class="fa fa-floppy-o"></i>
+    <i id="toolbar-zoomin" class="fa fa-search-plus" style="float: right;"></i>
+    <i id="toolbar-zoomout" class="fa fa-search-minus" style="float: right;"></i>
   </toolbar>
   <board>
   </board>
@@ -21,11 +24,14 @@
     <i id="context-delete" class="fa fa-trash-o"></i>
     <i id="context-clone" class="fa fa-clone"></i>
   </div>
-  <div id="slider"></div>
   <script src="./js/main.js"></script>
   <script>
     $( "#slider" ).slider();
-    var row = new Row()
+    var last_session = localStorage.getItem("board");
+    if (!last_session)
+      var row = new Row();
+    else
+      var row = Row.import(JSON.parse(last_session));
     $("board").append(row.element).append(row.add_more.element.addClass("primary"));
   </script>
 </body>

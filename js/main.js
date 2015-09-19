@@ -6,22 +6,32 @@ function modalClose() {
 var color = 0;
 var zoom = 1;
 
+$("#toolbar-clear").click(function() {
+  row.element.children().remove();
+});
+
 $("#toolbar-zoomin").click(function() {
   zoom *= 1.1;
   if (zoom > 1) zoom = 1; // Gators don't scale well :(
   $("board").css("transform", "translate(-50%, -50%) scale(" + String(zoom) + ")");
 });
 
-$("#toolbar-zoomout").click(function() {
+$("#toolbar-save").click(function() {
+  var blob = new Blob([JSON.stringify(row.export(), null, 2)], {type: "text/plain;charset=utf-8"});
+  saveAs(blob, "board.json");
+});
 
+
+$("#toolbar-zoomout").click(function() {
   zoom /= 1.1;
   $("board").css("transform", "translate(-50%, -50%) scale(" + String(zoom) + ")");
 });
 
 function nextColor() {
-  color += 1.618033988749894848204;
-  color %= 1;
-  return color * 360;
+  var color = 0;
+  var colors = row.allColors();
+  while (color in colors) { color++; }
+  return color;
 }
 
 $('.modal-overlay').on("click", modalClose);
@@ -60,7 +70,9 @@ Gator.prototype.closeJaw = function () {
 
 Gator.prototype.setColor = function(color) {
   this.color = color;
-  $(".colored", this.element).css("fill", "hsl(" + String(color) + ", 50%, 50%)");
+  $(".colored", this.element).css("fill", "hsl(" +
+    String(360 * ((color * 1.618033988749894848204) % 1))
+  + ", 50%, 50%)");
 }
 
 function Egg(color) {
@@ -82,15 +94,17 @@ Egg.prototype.hatch = function (callback) {
   window.setTimeout(function() {
     element.removeClass("shake shake-constant");
     if (callback) callback();
-  },3000)
+  }, 3000)
 }
 
 Egg.prototype.setColor = function(color) {
   this.color = color;
-  $(".colored", this.element).css("fill", "hsl(" + String(color) + ", 50%, 50%)");
+  $(".colored", this.element).css("fill", "hsl(" +
+    String(360 * ((color * 1.618033988749894848204) % 1))
+   + ", 50%, 50%)");
 }
 
-function Family(color, old_gator) {
+function Family(color, old_gator, row_callback) {
   var family = this;
 
   this.bound_eggs = [];
@@ -112,7 +126,7 @@ function Family(color, old_gator) {
     });
   }
 
-  this.row = new Row(this);
+  this.row = row_callback ? row_callback(this) : new Row(this);
   this.element = $(document.createElement("board-group")).addClass("col")
   .data("reference", this)
   .append(this.gator.element)
@@ -123,11 +137,10 @@ function Family(color, old_gator) {
     event.stopPropagation();
   }).mouseout(function(event) {
     $(this).removeClass("hover");
-  }).click(function() {
+  }).click(function(event) {
     $('.modal-overlay').addClass("shown");
     var modal = $('#family-modal')
     .addClass("shown");
-    event.stopPropagation();
 
     $("#context-delete").off("click").on("click", function() {
       family.element.remove();
@@ -138,6 +151,8 @@ function Family(color, old_gator) {
       family.clone().element.insertAfter(family.element);
       modalClose();
     });
+
+    event.stopPropagation();
   });
 
   this.setColor(color);
@@ -151,26 +166,58 @@ Family.prototype.dieOfAge = function() {
   var children = family.row.element.children("egg, board-group");
   if (children.size() != 1) return;
 
+
+    if (!family.canEatOrBeEaten()) return;
+    family.busy = true;
+
   eater.addClass("dying");
   family.gator.die(function() {
     family.element.replaceWith(children);
   });
 }
 
-Family.prototype.allColors = function() {
-  var family = this;
+Row.prototype.allColors  = function() {
   var result = {};
   if (!this.old_gator) result[this.color]  = [ this ];
-
-  this.row.element.children("board-group").each(function() {
-    var family = $(this).data("reference");
-    var childColors = family.allColors();
-    for (var color in childColors) {
-      if (!(color in result)) result[color] = [];
-      Array.prototype.push.apply(result[color], childColors[color]);
-    }
+  this.element.find("board-group.col, egg").each(function() {
+    var ref = $(this).data("reference");
+    if (ref.old_gator) return;
+    result[ref.color] = true;
   });
+
   return result;
+}
+
+Family.prototype.allColors = function() {
+  var result = {};
+
+  if (!this.old_gator) result[this.color]  = [ this ];
+  this.row.element.find("board-group.col").each(function() {
+    var family = $(this).data("reference");
+    if (family.old_gator) return;
+    if (!(family.color in result)) result[family.color] = [];
+    result[family.color].push(family);
+  });
+
+  return result;
+}
+
+Family.prototype.ancestors = function() {
+  return this.element.parents("board-group.col").toArray().map(function(element) {
+    return $(element).data("reference");
+  });
+}
+
+Family.prototype.descendants = function() {
+  return this.element.find("board-group.col").toArray().map(function(element) {
+    return $(element).data("reference");
+  });
+}
+
+Family.prototype.canEatOrBeEaten = function() {
+  if (this.busy) return false;
+  return this.ancestors().every(function (family) { return !family.busy; }) &&
+    this.descendants().every(function (family) { return !family.busy; });
 }
 
 Family.prototype.eat = function() {
@@ -179,12 +226,19 @@ Family.prototype.eat = function() {
   var eater_svg = $("svg", family.gator.element);
   var eaten = family.element.next();
   var eaten_family = eaten.data("reference");
+  if (!eaten_family) return;
+
+  if (!family.canEatOrBeEaten() ||
+    (eaten.is("board-group") && !eaten_family.canEatOrBeEaten()))
+    return;
+
+  family.busy = true;
+  eaten_family.busy = true;
 
   var hasToRename = eaten.is("board-group") &&
     Family.checkAlpha(this, eaten_family);
 
   window.setTimeout(function() {
-    if (!eaten_family) return;
     var replacements = family.associatedEggs().map(function(egg) {
       return { 'egg' : egg, 'replacement' : eaten_family.clone() };
     });
@@ -227,20 +281,11 @@ Family.prototype.eat = function() {
 Family.prototype.associatedEggs = function(color) {
   if (!color) color = this.color;
 
-  var family = this;
-  var result = [];
-
-  this.row.element.children("egg").each(function() {
-    var egg = $(this).data("reference");
-    if (egg.color == color) result.push(egg);
+  return this.element.find("egg").toArray().map(function(element) {
+    return $(element).data("reference");
+  }).filter(function(egg) {
+    return egg.color == color;
   });
-
-  this.row.element.children("board-group").each(function() {
-    var family = $(this).data("reference");
-    Array.prototype.push.apply(result, family.associatedEggs(color));
-  });
-
-  return result;
 }
 
 Family.prototype.clone = function() {
@@ -310,14 +355,13 @@ function Row(family) {
   this.element = $(document.createElement("board-group")).addClass("row");
   this.element.sortable({
     distance: 5,
+    helper: function() { return $("<div></div>"); },
     tolerance: "pointer",
     items: "board-group.col, egg",
     placeholder: "drag-placeholder",
     connectWith: "board-group.row",
-    forcePlaceholderSize: true
+    //forcePlaceholderSize: true
   });
-
-
 
   this.add_more = new Sprite("add-more.svg", "add-more");
   this.add_more.element.click(function(event) {
@@ -361,3 +405,72 @@ function Row(family) {
     event.preventDefault();
   });
 }
+
+Egg.prototype.export = function() {
+  return {
+    type: "egg", color: this.color
+  };
+}
+
+Family.prototype.export = function() {
+    return {
+      type: "family",
+      color: this.color,
+      children: this.row.export()
+    };
+}
+
+Row.prototype.export = function() {
+    return this.element.children("egg, board-group.col").toArray().map(function(element) {
+        return $(element).data("reference").export();
+      });
+}
+
+Egg.import = function(data) {
+  return new Egg(data.color);
+}
+
+Family.import = function(data) {
+  if (data.color !== null)
+    return new Family(data.color, false, function(family) { return Row.import(data.children, family) });
+  else
+    return new Family(null, true, function(family) { return Row.import(data.children, family) });
+}
+
+Row.import = function(data, parent) {
+  var result = new Row(parent);
+  data.forEach(function(element) {
+    if (element.type == "family") {
+      result.element.append(Family.import(element).element);
+    }
+    else
+    if (element.type == "egg") {
+      result.element.append(Egg.import(element).element);
+    }
+  });
+  return result;
+}
+
+window.addEventListener("beforeunload", function (event) {
+  localStorage.setItem("board", JSON.stringify(row.export()));
+});
+
+$(document).on("dragover", function () { $("body").addClass('fileover'); return false; });
+$(document).on("dragend",  function () { $("body").removeClass('fileover'); return false; });
+$(document).on("drop",  function (e) {
+  $("body").removeClass('fileover');
+  e.preventDefault();
+
+  var file = e.originalEvent.dataTransfer.files[0],
+      reader = new FileReader();
+  reader.onload = function (event) {
+try {
+    row = Row.import(JSON.parse(event.target.result));
+    $("board").children().remove();
+    $("board").append(row.element).append(row.add_more.element.addClass("primary"));
+  } catch(e) {console.error(e);}
+  };
+  reader.readAsText(file);
+
+  return false;
+});
