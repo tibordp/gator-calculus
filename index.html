@@ -5,24 +5,25 @@
   <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <link rel="stylesheet" type="text/css" href="css/gators.css">
   <link rel="stylesheet" type="text/css" href="css/csshake.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdn.materialdesignicons.com/1.2.65/css/materialdesignicons.min.css">
   <script src="./sprites/sprites.js"></script>
   <script src="./js/filesaver.js"></script>
 </head>
 <body>
   <toolbar>
-    <i id="toolbar-clear" class="fa fa-file-o"></i>
-    <i id="toolbar-save" class="fa fa-floppy-o"></i>
-    <i id="toolbar-zoomin" class="fa fa-search-plus" style="float: right;"></i>
-    <i id="toolbar-zoomout" class="fa fa-search-minus" style="float: right;"></i>
+    <i id="toolbar-clear" class="mdi mdi-file-outline"></i>
+    <i id="toolbar-save" class="mdi mdi-floppy"></i>
+    <i id="toolbar-zoomin" class="mdi mdi-magnify-plus" style="float: right;"></i>
+    <i id="toolbar-zoomout" class="mdi mdi-magnify-minus" style="float: right;"></i>
+    <div id="logo"><object data="img/logo.svg" type="image/svg+xml"></object></div>
   </toolbar>
   <board>
   </board>
   <div class="modal-overlay"></div>
   <div class="modal" id="new-selector"></div>
   <div class="modal" id="family-modal">
-    <i id="context-delete" class="fa fa-trash-o"></i>
-    <i id="context-clone" class="fa fa-clone"></i>
+    <i id="context-delete" class="mdi mdi-delete"></i>
+    <i id="context-clone" class="mdi mdi-content-copy"></i>
   </div>
   <script src="./js/main.js"></script>
   <script>

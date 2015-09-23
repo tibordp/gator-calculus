@@ -5,10 +5,27 @@ toolbar {
   background: linear-gradient(0deg, #fcfcfc, #fff);
   position: fixed;
   border-radius: 15px;
-  top: 10px;
+  top: 25px;
   left: 10px;
   right: 10px;
   padding-left: 10px;
+}
+
+#logo {
+  position: absolute;
+  display: inline-block;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#logo object {
+
+}
+
+#logo span {
+  color: white;
+  padding: 10px;
 }
 
 body.fileover {
@@ -224,7 +241,7 @@ board-group.hover.col:  empty(.row) {
   box-shadow: 0 0 5px #aaaaaa;
 }
 
-#family-modal i.fa {
+#family-modal i.mdi {
   font-size: 30pt;
   padding: 10px;
   color: #2 31f20;
@@ -273,7 +290,7 @@ board-group.hover.col:  empty(.row) {
   width: 100px;
 }
 
-#family-modal i.fa:hover {
+#family-modal i.mdi:hover {
  cursor: pointer;
  -webkit-filter: brightness(1.1) drop-shadow(0 0 2px black);
  -moz-filter: brightness(1.1) drop-shadow(0 0 2px black);
@@ -281,7 +298,7 @@ board-group.hover.col:  empty(.row) {
  filter: brightness(1.1) drop-shadow(0 0 2px black);
 }
 
-toolbar i.fa:hover {
+toolbar i.mdi:hover {
  cursor: pointer;
  -webkit-filter: drop-shadow(0 0 2px #ccc);
  -moz-filter: drop-shadow(0 0 2px #ccc);
@@ -289,7 +306,7 @@ toolbar i.fa:hover {
  filter: drop-shadow(0 0 2px #ccc);
 }
 
-toolbar i.fa {
+toolbar i.mdi {
   font-size: 25pt;
   padding: 5px;
   color: #999;
