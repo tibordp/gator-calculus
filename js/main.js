@@ -482,6 +482,12 @@ $("#toolbar-zoomout").click(function() {
   $("board").css("transform", "translate(-50%, -50%) scale(" + String(Session.zoom) + ")");
 });
 
+$("#logo, #toolbar-help").click(function() {
+  $('.modal-overlay').addClass("shown");
+  $('#description-modal').addClass("shown");
+});
+
+
 $(document).on("dragover", function () { $("body").addClass('fileover'); return false; });
 $(document).on("dragend",  function () { $("body").removeClass('fileover'); return false; });
 $(document).on("drop",  function (e) {

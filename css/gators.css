@@ -1,6 +1,9 @@
+body {
+  font-family: 'Comic Neue Angular', sans-serif;
+}
+
 toolbar {
   z-index: 10;
-  height: 45px;
   border: 2px solid #ccc;
   background: linear-gradient(0deg, #fcfcfc, #fff);
   position: fixed;
@@ -17,10 +20,10 @@ toolbar {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
+  cursor: pointer;
 }
 
 #logo object {
-
 }
 
 #logo span {
@@ -199,6 +202,18 @@ board-group.hover.col:  empty(.row) {
   background: linear-gradient(0deg, #fff3f3, #fff);
 }
 
+h1 {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+footer {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+}
+
 .modal-overlay {
   transition: opacity 0.2s ease-in;
   position: absolute;
@@ -224,6 +239,20 @@ board-group.hover.col:  empty(.row) {
 .modal.shown {
   transform: translate(-50%, -50%) scale(1) ;
   display: inline-block;
+}
+
+
+#description-modal {
+  vertical-align: middle;
+  max-width: 500px;
+  padding: 30px;
+  z-index: 12;
+  position: absolute;
+  top: 50%; left: 50%;
+  border: 1px solid #999;
+  border-radius: 20px;
+  background-color: #fafafa;
+  box-shadow: 0 0 5px #aaaaaa;
 }
 
 
