@@ -83,8 +83,11 @@ gator svg:hover, egg svg:hover, add-more svg:hover {
     100% { transform: matrix(1.25,0,0,-1.25,448.13052,862.32916) translate(-204.654px, 644.378px) rotate(0deg) translate(204.654px, -644.378px); }
 }
 
-board-group add-more {
-  visibility: hidden;
+
+@media (pointer:fine) {
+  board-group add-more {
+    visibility: hidden;
+  }
 }
 
 add-more {

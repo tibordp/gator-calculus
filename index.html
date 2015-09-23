@@ -26,13 +26,7 @@
   </div>
   <script src="./js/main.js"></script>
   <script>
-    $( "#slider" ).slider();
-    var last_session = localStorage.getItem("board");
-    if (!last_session)
-      var row = new Row();
-    else
-      var row = Row.import(JSON.parse(last_session));
-    $("board").append(row.element).append(row.add_more.element.addClass("primary"));
+    Session.init();
   </script>
 </body>
 </html>
