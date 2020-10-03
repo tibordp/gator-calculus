@@ -3,4 +3,4 @@
 A game of untyped lambda calculus based on http://worrydream.com/AlligatorEggs/
 
 ## See it live
-http://tibordp.github.io/gator-calculus/
+https://tibordp.github.io/gator-calculus/
